@@ -1,8 +1,8 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"os"
 )
 
 /*
@@ -17,8 +17,8 @@ const (
 )
 
 func main() {
-	// Removes program name
-	args := os.Args[1:]
+	flag.Parse()
+	args := flag.Args()
 	if len(args) == 0 {
 		return
 	}
