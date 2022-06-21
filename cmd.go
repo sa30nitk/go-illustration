@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 
+	"go-illustration/config"
 	"go-illustration/httpapi/server"
 )
 
@@ -24,7 +25,7 @@ func main() {
 	if len(args) == 0 {
 		return
 	}
-
+	config.Load()
 	cmd := args[0]
 	switch cmd {
 	case startServer:
