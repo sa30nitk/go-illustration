@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+
+	"go-illustration/httpapi/server"
 )
 
 /*
@@ -13,7 +15,7 @@ Possible commands:
 */
 
 const (
-	server = "start-server"
+	startServer = "start-server"
 )
 
 func main() {
@@ -25,8 +27,9 @@ func main() {
 
 	cmd := args[0]
 	switch cmd {
-	case server:
+	case startServer:
 		fmt.Println("starting server")
+		server.StartServer()
 	default:
 		return
 	}
