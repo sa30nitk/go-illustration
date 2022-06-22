@@ -7,6 +7,8 @@ import (
 )
 
 func Load() {
+	viper.AutomaticEnv()
+
 	viper.SetConfigName("application")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
