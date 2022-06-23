@@ -26,11 +26,12 @@ func main() {
 		return
 	}
 	config.Load()
+	cfg := config.NewConfig()
 	cmd := args[0]
 	switch cmd {
 	case startServer:
 		fmt.Println("starting server")
-		server.StartServer()
+		server.StartServer(cfg)
 	default:
 		return
 	}

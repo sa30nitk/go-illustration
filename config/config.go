@@ -1,27 +1,21 @@
 package config
 
-import (
-	"fmt"
+import "github.com/spf13/viper"
 
-	"github.com/spf13/viper"
-)
+type Config struct {
+	App App
+}
 
-func Load() {
-	viper.AutomaticEnv()
+type App struct {
+	Port int64
+}
 
-	viper.SetConfigName("application")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath("resources")
-	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			fmt.Println("config file not found")
-		} else {
-			fmt.Printf("reading config file failed with error: %s\n", err)
-		}
-		return
+func NewConfig() Config {
+	return Config{
+		App: NewApp(),
 	}
+}
 
-	fmt.Println("config file loaded")
-	fmt.Println(viper.AllKeys())
-	fmt.Println(viper.AllSettings())
+func NewApp() App {
+	return App{Port: viper.GetInt64("app.port")}
 }
