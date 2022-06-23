@@ -19,7 +19,9 @@ func StartServer(cfg config.Config) {
 		http.Handle(r.Path, r.HandlerFunc)
 	}
 
-	err := http.ListenAndServe(":8090", nil)
+	http.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) { fmt.Fprint(w, "pong") })
+
+	err := http.ListenAndServe(fmt.Sprintf(":%d", cfg.App.Port), nil)
 	if err != nil {
 		fmt.Printf("Failed to launch server with error: %s\n", err)
 		panic("Failed to start")
