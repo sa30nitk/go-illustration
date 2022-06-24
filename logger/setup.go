@@ -12,10 +12,10 @@ func init() {
 
 }
 
-func Setup(cfg config.App) error {
+func Setup(cfg config.App) (*os.File, error) {
 	file, err := os.OpenFile("application.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	log.SetOutput(file)
 
@@ -25,5 +25,5 @@ func Setup(cfg config.App) error {
 		log.Info("Logger setup completed")
 
 	}
-	return nil
+	return file, nil
 }

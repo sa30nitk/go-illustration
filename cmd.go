@@ -34,9 +34,11 @@ func main() {
 	log.Info("config loaded")
 	cfg := config.NewConfig()
 
-	if err := logger.Setup(cfg.App); err != nil {
+	file, err := logger.Setup(cfg.App)
+	if err != nil {
 		panic("Failed to set up logger")
 	}
+	defer file.Close()
 
 	log.Info("logger set up completed")
 
