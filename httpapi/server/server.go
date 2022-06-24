@@ -10,7 +10,7 @@ import (
 	"go-illustration/httpapi/server/route"
 )
 
-func StartServer(cfg config.Config) {
+func StartServer(cfg config.Config) error {
 	var routes []route.Route
 	routes = append(routes, external.V1()...)
 	routes = append(routes, internal.V1()...)
@@ -22,8 +22,5 @@ func StartServer(cfg config.Config) {
 	http.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) { fmt.Fprint(w, "pong") })
 
 	err := http.ListenAndServe(fmt.Sprintf(":%d", cfg.App.Port), nil)
-	if err != nil {
-		fmt.Printf("Failed to launch server with error: %s\n", err)
-		panic("Failed to start")
-	}
+	return err
 }

@@ -2,10 +2,11 @@ package main
 
 import (
 	"flag"
-	"fmt"
 
+	log "github.com/sirupsen/logrus"
 	"go-illustration/config"
 	"go-illustration/httpapi/server"
+	"go-illustration/logger"
 )
 
 /*
@@ -25,14 +26,26 @@ func main() {
 	if len(args) == 0 {
 		return
 	}
-	config.Load()
+
+	if err := config.Load(); err != nil {
+		panic("Failed to load configs")
+	}
+
+	log.Info("config loaded")
 	cfg := config.NewConfig()
+
+	if err := logger.Setup(cfg.App); err != nil {
+		panic("Failed to set up logger")
+	}
+
+	log.Info("logger set up completed")
+
 	cmd := args[0]
 	switch cmd {
 	case startServer:
-		fmt.Println("starting server")
-		server.StartServer(cfg)
-	default:
-		return
+		log.Debug("Starting server")
+		if err := server.StartServer(cfg); err != nil {
+			log.Errorf("Failed to launch server with error: %s\n", err)
+		}
 	}
 }
