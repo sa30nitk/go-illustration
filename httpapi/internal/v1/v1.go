@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"go-illustration/httpapi/server/route"
+	"go-illustration/httpapi/server"
 )
 
-func V1() []route.Route {
-	return []route.Route{
+func V1() []server.Route {
+	return []server.Route{
 		{
 			http.MethodGet,
 			"/gi/internal/v1/bye",

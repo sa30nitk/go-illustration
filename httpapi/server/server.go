@@ -8,11 +8,10 @@ import (
 	"go-illustration/config"
 	external "go-illustration/httpapi/external/v1"
 	internal "go-illustration/httpapi/internal/v1"
-	"go-illustration/httpapi/server/route"
 )
 
 func StartServer(cfg config.Config) error {
-	var routes []route.Route
+	var routes []Route
 	routes = append(routes, external.V1()...)
 	routes = append(routes, internal.V1()...)
 
