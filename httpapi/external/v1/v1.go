@@ -1,9 +1,9 @@
 package v1
 
 import (
-	"fmt"
 	"net/http"
 
+	"go-illustration/httpapi/middleware"
 	"go-illustration/httpapi/server/route"
 )
 
@@ -12,12 +12,8 @@ func V1() []route.Route {
 		{
 			http.MethodGet,
 			"/gi/v1/hi",
-			func(w http.ResponseWriter, r *http.Request) {
-				_, err := fmt.Fprintf(w, "hi")
-				if err != nil {
-					return
-				}
-			},
+			middleware.DummyMiddleware(middleware.RequestLog(hiHandler())),
+			//middlewareChain(middleware.RequestLog(), middleware.DummyMiddleware()),
 		},
 	}
 }
