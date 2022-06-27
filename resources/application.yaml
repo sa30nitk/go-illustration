@@ -1,3 +1,7 @@
 app:
   port: 8090
   loglevel: debug
+newrelic:
+  license: qwerty12345678asdfghqwerty12345678asdfgh
+  app.name: gl
+  enabled: false

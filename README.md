@@ -11,4 +11,5 @@ This is for building a repository template setup for golang projects.
 5. Demos to add logging to files
 6. Demos to add strict check on path methods
 7. Demos to add middlewares
+8. Demos to add newrelic
 

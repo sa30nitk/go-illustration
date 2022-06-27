@@ -23,7 +23,7 @@ func Load() error {
 		}
 	}
 
-	// for transforming app.host to app_host
+	// for transforming App.host to app_host
 	repl := strings.NewReplacer(".", "_")
 	viper.SetEnvKeyReplacer(repl)
 	return nil
