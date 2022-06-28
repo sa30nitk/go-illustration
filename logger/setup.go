@@ -3,6 +3,7 @@ package logger
 import (
 	"os"
 
+	"github.com/rifflock/lfshook"
 	log "github.com/sirupsen/logrus"
 	"go-illustration/config"
 )
@@ -10,21 +11,19 @@ import (
 func init() {
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetLevel(log.DebugLevel)
+	log.SetOutput(os.Stdout)
 }
 
 func Setup(cfg config.App) (error, func()) {
-	file, err := os.OpenFile("application.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err != nil {
-		return err, func() {}
+	pathMap := lfshook.PathMap{
+		log.DebugLevel: "application.log",
 	}
-	log.SetOutput(file)
 
+	log.AddHook(lfshook.NewHook(pathMap, &log.JSONFormatter{}))
 	if level, err := log.ParseLevel(cfg.LogLevel); err == nil {
 		log.SetLevel(level)
 		log.Info("Logger setup completed")
 
 	}
-	return nil, func() {
-		file.Close()
-	}
+	return nil, func() {}
 }
