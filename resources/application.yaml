@@ -5,3 +5,7 @@ newrelic:
   license: qwerty12345678asdfghqwerty12345678asdfgh
   app.name: gl
   enabled: false
+statsd:
+  host: localhost:8125
+  prefix: gi
+  

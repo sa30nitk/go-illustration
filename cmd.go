@@ -7,6 +7,7 @@ import (
 	"go-illustration/config"
 	"go-illustration/httpapi/server"
 	"go-illustration/logger"
+	"go-illustration/statsd"
 )
 
 /*
@@ -42,11 +43,20 @@ func main() {
 
 	log.Info("logger set up completed")
 
+	statsdClient, err, statsdCloseFun := statsd.Setup(cfg.StatsD)
+	if err != nil {
+		panic("Failed to set up statsdClient")
+	}
+	defer statsdCloseFun()
+	log.Info("statsd set up completed")
+
 	cmd := args[0]
 	switch cmd {
 	case startServer:
 		log.Debug("Starting server")
-		if err := server.StartServer(cfg); err != nil {
+		if err := server.StartServer(cfg, server.Dependencies{
+			StatsD: statsdClient,
+		}); err != nil {
 			log.Errorf("Failed to launch server with error: %s\n", err)
 		}
 	}

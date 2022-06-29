@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/newrelic/go-agent/v3/integrations/nrhttprouter"
 	"go-illustration/config"
@@ -12,9 +13,18 @@ import (
 	"go-illustration/newrelic"
 )
 
-func StartServer(cfg config.Config) error {
+type Reporter interface {
+	Incr(stat string, count int64) error
+	PrecisionTiming(stat string, delta time.Duration) error
+}
+
+type Dependencies struct {
+	StatsD Reporter
+}
+
+func StartServer(cfg config.Config, dependencies Dependencies) error {
 	var routes []route.Route
-	routes = append(routes, external.V1()...)
+	routes = append(routes, external.V1(dependencies.StatsD)...)
 	routes = append(routes, internal.V1()...)
 
 	app, err := newrelic.NRApp(cfg.NR)

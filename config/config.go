@@ -3,8 +3,9 @@ package config
 import "github.com/spf13/viper"
 
 type Config struct {
-	App App
-	NR  NewRelic
+	App    App
+	NR     NewRelic
+	StatsD StatsD
 }
 
 func NewConfig() Config {
@@ -14,5 +15,9 @@ func NewConfig() Config {
 			License: getStringWithDefault("newrelic.license", ""),
 			App:     getStringWithDefault("newrelic.app.name", ""),
 			Enabled: viper.GetBool("newrelic.enabled")},
+		StatsD: StatsD{
+			Host:   getStringWithDefault("statsd.host", ""),
+			Prefix: getStringWithDefault("statsd.Prefix", "gl"),
+		},
 	}
 }

@@ -7,14 +7,14 @@ import (
 	"go-illustration/httpapi/route"
 )
 
-func V1() []route.Route {
+func V1(reporter middleware.Statsd) []route.Route {
 	return []route.Route{
 		{
 			http.MethodGet,
 			"/gi/v1/hi",
 			middleware.Chain(
-				middleware.Placeholder("hi"),
 				middleware.RequestLog(),
+				middleware.StatsdTiming(reporter),
 			)(hiHandler()),
 		},
 	}
