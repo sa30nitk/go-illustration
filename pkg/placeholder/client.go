@@ -22,10 +22,10 @@ type Client struct {
 
 func NewClient(cfg Cfg) *Client {
 	hystrix.ConfigureCommand("placeholder_ping", hystrix.CommandConfig{
-		Timeout:                int(time.Second * 10),
-		MaxConcurrentRequests:  10,
-		RequestVolumeThreshold: 5,
-		SleepWindow:            int(time.Second * 5),
+		Timeout:                int(time.Millisecond * 500),
+		MaxConcurrentRequests:  3,
+		RequestVolumeThreshold: 2,
+		SleepWindow:            5000,
 		ErrorPercentThreshold:  10,
 	})
 
@@ -33,15 +33,15 @@ func NewClient(cfg Cfg) *Client {
 		Transport: &http.Transport{
 			Proxy: http.ProxyFromEnvironment,
 			DialContext: (&net.Dialer{
-				Timeout:   time.Second * 2,
-				KeepAlive: time.Second * 2,
+				Timeout:   time.Second,
+				KeepAlive: time.Second,
 			}).DialContext,
 			DisableKeepAlives: false,
 			MaxIdleConns:      4,
 			MaxConnsPerHost:   4,
-			IdleConnTimeout:   time.Second * 5,
+			IdleConnTimeout:   time.Millisecond * 500,
 		},
-		Timeout: time.Second * 10,
+		Timeout: time.Millisecond * 500,
 	}
 	return &Client{c: &c, cfg: cfg}
 }
