@@ -52,7 +52,6 @@ func (c *Client) Placeholder(ctx context.Context) *http.Response {
 	hystrixErr := hystrix.Do("placeholder_ping", func() error {
 		url := fmt.Sprintf("%s/ping", c.cfg.Host)
 		req, _ := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-		log.Debug(req)
 		var err error
 		res, err = c.c.Do(req)
 		if err != nil {
@@ -63,14 +62,13 @@ func (c *Client) Placeholder(ctx context.Context) *http.Response {
 		}
 		return nil
 	}, func(err error) error {
-		log.Debug("placeholder ping error: ", err)
+		log.Error("placeholder ping error: ", err)
 		return err
 	})
 	if hystrixErr != nil {
-		log.Debug("placeholder ping return error: ", hystrixErr)
+		log.Error("placeholder ping return error: ", hystrixErr)
 		return nil
 	}
-	log.Debug("placeholder ping return response: ", res)
 	return res
 }
 
