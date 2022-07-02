@@ -1,11 +1,15 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"github.com/spf13/viper"
+	"go-illustration/pkg/placeholder"
+)
 
 type Config struct {
-	App    App
-	NR     NewRelic
-	StatsD StatsD
+	App         App
+	NR          NewRelic
+	StatsD      StatsD
+	PlaceHolder placeholder.Cfg
 }
 
 func NewConfig() Config {
@@ -19,5 +23,6 @@ func NewConfig() Config {
 			Host:   getStringWithDefault("statsd.host", ""),
 			Prefix: getStringWithDefault("statsd.Prefix", "gl"),
 		},
+		PlaceHolder: placeholder.Cfg{Host: getStringWithDefault("placeholder.host", "")},
 	}
 }

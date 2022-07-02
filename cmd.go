@@ -7,6 +7,7 @@ import (
 	"go-illustration/config"
 	"go-illustration/httpapi/server"
 	"go-illustration/logger"
+	"go-illustration/pkg/placeholder"
 	"go-illustration/statsd"
 )
 
@@ -55,7 +56,8 @@ func main() {
 	case startServer:
 		log.Debug("Starting server")
 		server.StartServer(cfg, server.Dependencies{
-			StatsD: statsdClient,
+			StatsD:      statsdClient,
+			PlaceHolder: placeholder.NewClient(cfg.PlaceHolder),
 		})
 	}
 }

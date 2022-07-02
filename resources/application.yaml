@@ -8,4 +8,5 @@ newrelic:
 statsd:
   host: localhost:8125
   prefix: gi
-  
+placeholder:
+  host: http://localhost:8090

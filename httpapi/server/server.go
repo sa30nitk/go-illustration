@@ -22,13 +22,21 @@ type Reporter interface {
 	PrecisionTiming(stat string, delta time.Duration) error
 }
 
+type PlaceHolder interface {
+	Placeholder(ctx context.Context) *http.Response
+}
+
 type Dependencies struct {
-	StatsD Reporter
+	StatsD      Reporter
+	PlaceHolder PlaceHolder
 }
 
 func StartServer(cfg config.Config, dependencies Dependencies) {
 	var routes []route.Route
-	routes = append(routes, external.V1(dependencies.StatsD)...)
+	routes = append(routes, external.V1(external.Deps{
+		PlaceHolder: dependencies.PlaceHolder,
+		Reporter:    dependencies.StatsD,
+	})...)
 	routes = append(routes, internal.V1()...)
 
 	app, err := newrelic.NRApp(cfg.NR)

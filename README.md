@@ -12,4 +12,6 @@ This is for building a repository template setup for golang projects.
 6. Demos to add strict check on path methods
 7. Demos to add middlewares
 8. Demos to add newrelic
+9. Demos to perform shuf down if os.signal hints to do
+10. Demos to add a upstream client
 

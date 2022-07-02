@@ -7,15 +7,20 @@ import (
 	"go-illustration/httpapi/route"
 )
 
-func V1(reporter middleware.Statsd) []route.Route {
+type Deps struct {
+	PlaceHolder PlaceHolder
+	Reporter    middleware.Statsd
+}
+
+func V1(deps Deps) []route.Route {
 	return []route.Route{
 		{
 			http.MethodGet,
 			"/gi/v1/hi",
 			middleware.Chain(
 				middleware.RequestLog(),
-				middleware.StatsdTiming(reporter),
-			)(hiHandler()),
+				middleware.StatsdTiming(deps.Reporter),
+			)(hiHandler(deps.PlaceHolder)),
 		},
 	}
 }
