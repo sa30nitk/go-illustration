@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/afex/hystrix-go/hystrix"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -20,6 +21,14 @@ type Client struct {
 }
 
 func NewClient(cfg Cfg) *Client {
+	hystrix.ConfigureCommand("placeholder_ping", hystrix.CommandConfig{
+		Timeout:                int(time.Second * 10),
+		MaxConcurrentRequests:  10,
+		RequestVolumeThreshold: 5,
+		SleepWindow:            int(time.Second * 5),
+		ErrorPercentThreshold:  10,
+	})
+
 	c := http.Client{
 		Transport: &http.Transport{
 			Proxy: http.ProxyFromEnvironment,
@@ -38,14 +47,22 @@ func NewClient(cfg Cfg) *Client {
 }
 
 func (c *Client) Placeholder(ctx context.Context) *http.Response {
-	url := fmt.Sprintf("%s/ping", c.cfg.Host)
-	req, _ := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-	log.Debug(req)
-	res, err := c.c.Do(req)
-	if err != nil {
+	var res *http.Response
+	hystrixErr := hystrix.Do("placeholder_ping", func() error {
+		url := fmt.Sprintf("%s/ping", c.cfg.Host)
+		req, _ := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+		log.Debug(req)
+		var err error
+		res, err = c.c.Do(req)
+		return err
+	}, func(err error) error {
+		log.Debug("placeholder ping error: ", err)
+		return err
+	})
+	if hystrixErr != nil {
+		log.Debug("placeholder ping return error: ", hystrixErr)
 		return nil
 	}
-	log.Debug(res)
+	log.Debug("placeholder ping return response: ", res)
 	return res
-
 }
