@@ -2,6 +2,7 @@ package placeholder
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -54,7 +55,13 @@ func (c *Client) Placeholder(ctx context.Context) *http.Response {
 		log.Debug(req)
 		var err error
 		res, err = c.c.Do(req)
-		return err
+		if err != nil {
+			return err
+		}
+		if is5xx(res.StatusCode) {
+			return errors.New("5xx error")
+		}
+		return nil
 	}, func(err error) error {
 		log.Debug("placeholder ping error: ", err)
 		return err
@@ -66,3 +73,5 @@ func (c *Client) Placeholder(ctx context.Context) *http.Response {
 	log.Debug("placeholder ping return response: ", res)
 	return res
 }
+
+func is5xx(code int) bool { return code >= 500 && code < 599 }
