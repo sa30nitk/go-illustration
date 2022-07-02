@@ -1,15 +1,27 @@
 package v1
 
 import (
-	"fmt"
+	"encoding/json"
 	"net/http"
 )
 
+type hiResponse struct {
+	Value string `json:"val"`
+}
+
 func hiHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		_, err := fmt.Fprintf(w, "hi")
-		if err != nil {
-			return
-		}
+		resp := hiResponse{Value: "hi"}
+		writeResponse(w, resp)
+	}
+}
+
+func writeResponse(w http.ResponseWriter, resp interface{}) {
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	enCoder := json.NewEncoder(w)
+	err := enCoder.Encode(resp)
+	if err != nil {
+		return
 	}
 }
