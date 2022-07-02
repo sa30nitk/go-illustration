@@ -1,11 +1,15 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"os"
+	"os/signal"
 	"time"
 
 	"github.com/newrelic/go-agent/v3/integrations/nrhttprouter"
+	log "github.com/sirupsen/logrus"
 	"go-illustration/config"
 	external "go-illustration/httpapi/external/v1"
 	internal "go-illustration/httpapi/internal/v1"
@@ -22,21 +26,46 @@ type Dependencies struct {
 	StatsD Reporter
 }
 
-func StartServer(cfg config.Config, dependencies Dependencies) error {
+func StartServer(cfg config.Config, dependencies Dependencies) {
 	var routes []route.Route
 	routes = append(routes, external.V1(dependencies.StatsD)...)
 	routes = append(routes, internal.V1()...)
 
 	app, err := newrelic.NRApp(cfg.NR)
 	if err != nil {
-		return err
+		return
 	}
+
 	router := nrhttprouter.New(app)
 	for _, r := range routes {
 		router.Handler(r.Method, r.Path, r.HandlerFunc)
 	}
 	router.HandlerFunc(http.MethodGet, "/ping", func(w http.ResponseWriter, r *http.Request) { fmt.Fprint(w, "pong") })
 
-	err = http.ListenAndServe(fmt.Sprintf(":%d", cfg.App.Port), router)
-	return err
+	var srv http.Server
+	idleConnsClosed := make(chan struct{})
+	go func() {
+		sigint := make(chan os.Signal, 1)
+		signal.Notify(sigint, os.Interrupt)
+		<-sigint
+
+		if err := srv.Shutdown(context.Background()); err != nil {
+			// Error from closing listeners, or context timeout:
+			log.Debugf("HTTP server Shutdown: %v", err)
+		}
+
+		app.Shutdown(time.Second * 10)
+		close(idleConnsClosed)
+	}()
+
+	addr := fmt.Sprintf(":%d", cfg.App.Port)
+	srv = http.Server{
+		Addr:    addr,
+		Handler: router,
+	}
+
+	err = srv.ListenAndServe()
+	<-idleConnsClosed
+
+	log.Info("server is closing")
 }

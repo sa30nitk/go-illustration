@@ -54,10 +54,8 @@ func main() {
 	switch cmd {
 	case startServer:
 		log.Debug("Starting server")
-		if err := server.StartServer(cfg, server.Dependencies{
+		server.StartServer(cfg, server.Dependencies{
 			StatsD: statsdClient,
-		}); err != nil {
-			log.Errorf("Failed to launch server with error: %s\n", err)
-		}
+		})
 	}
 }
