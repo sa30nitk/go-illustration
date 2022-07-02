@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/newrelic/go-agent/v3/integrations/nrhttprouter"
@@ -54,7 +55,7 @@ func StartServer(cfg config.Config, dependencies Dependencies) {
 	idleConnsClosed := make(chan struct{})
 	go func() {
 		sigint := make(chan os.Signal, 1)
-		signal.Notify(sigint, os.Interrupt)
+		signal.Notify(sigint, syscall.SIGTERM, syscall.SIGINT)
 		<-sigint
 
 		if err := srv.Shutdown(context.Background()); err != nil {
