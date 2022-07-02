@@ -14,12 +14,16 @@ type PlaceHolder interface {
 	Placeholder(ctx context.Context) *http.Response
 }
 
-func hiHandler(pc PlaceHolder) http.HandlerFunc {
+type Translator interface {
+	Localize(msg string, langs ...string) string
+}
+
+func hiHandler(pc PlaceHolder, tr Translator) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		val := "bye"
 		if resp := pc.Placeholder(r.Context()); resp != nil {
 			if resp.StatusCode == http.StatusOK {
-				val = "hi from pc client"
+				val = tr.Localize("hello world", r.Header.Get("locale"))
 			}
 		}
 		resp := hiResponse{Value: val}

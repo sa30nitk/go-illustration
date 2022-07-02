@@ -27,9 +27,14 @@ type PlaceHolder interface {
 	Placeholder(ctx context.Context) *http.Response
 }
 
+type Translator interface {
+	Localize(msg string, langs ...string) string
+}
+
 type Dependencies struct {
 	StatsD      Reporter
 	PlaceHolder PlaceHolder
+	Translator  Translator
 }
 
 func StartServer(cfg config.Config, dependencies Dependencies) {
@@ -37,6 +42,7 @@ func StartServer(cfg config.Config, dependencies Dependencies) {
 	routes = append(routes, external.V1(external.Deps{
 		PlaceHolder: dependencies.PlaceHolder,
 		Reporter:    dependencies.StatsD,
+		Translator:  dependencies.Translator,
 	})...)
 	routes = append(routes, internal.V1()...)
 

@@ -10,6 +10,7 @@ import (
 type Deps struct {
 	PlaceHolder PlaceHolder
 	Reporter    middleware.Statsd
+	Translator  Translator
 }
 
 func V1(deps Deps) []route.Route {
@@ -20,7 +21,7 @@ func V1(deps Deps) []route.Route {
 			middleware.Chain(
 				middleware.RequestLog(),
 				middleware.StatsdTiming(deps.Reporter),
-			)(hiHandler(deps.PlaceHolder)),
+			)(hiHandler(deps.PlaceHolder, deps.Translator)),
 		},
 	}
 }
